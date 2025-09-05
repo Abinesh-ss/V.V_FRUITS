@@ -10,7 +10,6 @@ app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret")
 
 # DATABASE: use DATABASE_URL from Railway. Fallback to sqlite for local testing.
 database_url = os.environ.get("DATABASE_URL", "sqlite:///local_dev.db")
-# Heroku-style PG URI sometimes starts with postgres://; SQLAlchemy needs postgresql://
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
@@ -25,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 # --------------------------
-# MODELS (match your schema)
+# MODELS
 # --------------------------
 class Auction(db.Model):
     __tablename__ = 'auction'
@@ -111,8 +110,13 @@ def parse_int(value, default=0):
         return default
 
 
+def calc_quantity(weight, trays):
+    """Quantity = weight - 2 * no_of_trays"""
+    return weight - (2 * trays)
+
+
 # --------------------------
-# ROUTES (robust: try/except + rollback)
+# ROUTES
 # --------------------------
 @app.route('/')
 def index():
@@ -129,28 +133,27 @@ def auction():
 @app.route('/add_auction', methods=['POST'])
 def add_auction():
     try:
-        seller = request.form.get('seller', '').strip()
+        seller_name = request.form.get('seller_name', '').strip()
         product = request.form.get('product', '').strip()
-        total_weight = parse_float(request.form.get('total_weight'))
+        weight = parse_float(request.form.get('weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = weight * no_of_trays
-        sold_price_per_unit = parse_float(request.form.get('sold_price_per_unit'))
-        buyer_name = request.form.get('buyer_name') or None
+        quantity = calc_quantity(weight, no_of_trays)
+        price = parse_float(request.form.get('price'))
+        buyer_name = request.form.get('buyer_name', '').strip()
         bill_amount = quantity * price
 
-        # Basic validation
-        if not seller or not product:
+        if not seller_name or not product:
             flash("Seller and Product are required.", "danger")
             return redirect(url_for('auction'))
 
         new_row = Auction(
-            seller_name=request.form.get('seller_name'),
-            product=request.form.get('product'),
+            seller_name=seller_name,
+            product=product,
             weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity,
             price=price,
-            buyer_name=request.form.get('buyer_name'),
+            buyer_name=buyer_name,
             bill_amount=bill_amount
         )
         db.session.add(new_row)
@@ -174,9 +177,9 @@ def available_stock():
 def add_available_stock():
     try:
         product = request.form.get('product', '').strip()
-        total_weight = parse_float(request.form.get('total_weight'))
+        weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = weight * no_of_trays
+        quantity = calc_quantity(weight, no_of_trays)
 
         if not product:
             flash("Product is required.", "danger")
@@ -184,7 +187,7 @@ def add_available_stock():
 
         new_row = AvailableStock(
             product=product,
-            total_weight=total_weight,
+            total_weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity
         )
@@ -209,10 +212,10 @@ def direct_inbound():
 def add_direct_inbound():
     try:
         name = request.form.get('name', '').strip()
-        whole_weight = parse_float(request.form.get('whole_weight'))
+        weight = parse_float(request.form.get('whole_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = weight * no_of_trays
-        seller_name = request.form.get('seller_name') or None
+        quantity = calc_quantity(weight, no_of_trays)
+        seller_name = request.form.get('seller_name', '').strip()
 
         if not name:
             flash("Name is required.", "danger")
@@ -220,7 +223,7 @@ def add_direct_inbound():
 
         new_row = DirectInbound(
             name=name,
-            whole_weight=whole_weight,
+            whole_weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity,
             seller_name=seller_name
@@ -314,9 +317,9 @@ def outbound():
 def add_outbound():
     try:
         product = request.form.get('product', '').strip()
-        total_weight = parse_float(request.form.get('total_weight'))
+        weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = weight * no_of_trays
+        quantity = calc_quantity(weight, no_of_trays)
 
         if not product:
             flash("Product is required.", "danger")
@@ -324,7 +327,7 @@ def add_outbound():
 
         new_row = Outbound(
             product=product,
-            total_weight=total_weight,
+            total_weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity
         )
@@ -338,10 +341,9 @@ def add_outbound():
     return redirect(url_for('outbound'))
 
 
-# ---------- SIMPLE PAGES (render-only or small logic) ----------
+# ---------- SIMPLE PAGES ----------
 @app.route('/seller_bill')
 def seller_bill():
-    # if you have a model for seller bills, fetch here
     return render_template('seller_bill.html')
 
 
@@ -361,11 +363,10 @@ def open_whatsapp():
 
 
 # --------------------------
-# Initialize DB if running locally
+# Initialize DB
 # --------------------------
 if __name__ == '__main__':
     with app.app_context():
-        # 🔑 Create tables in DB if they don't exist
         db.create_all()
         print("✅ Tables created (if not already present).")
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)
