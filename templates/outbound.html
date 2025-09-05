@@ -6,7 +6,7 @@
   <div class="col-md-4"><input class="form-control" name="product" placeholder="Product" required></div>
   <div class="col-md-2"><input step="0.01" class="form-control" name="total_weight" placeholder="Total Weight" required></div>
   <div class="col-md-2"><input type="number" class="form-control" name="no_of_trays" placeholder="Trays" required></div>
-  <div class="col-md-2"><input step="0.01" class="form-control" name="quantity" placeholder="Quantity" required></div>
+  <div class="col-md-2"><input step="0.01" class="form-control" name="quantity" id="quantity" placeholder="Quantity" readonly>
   <div class="col-12 mt-2"><button class="btn btn-primary" type="submit">Add Outbound</button></div>
 </form>
 
@@ -27,3 +27,12 @@
   </tbody>
 </table>
 {% endblock %}
+<script>
+function calculateQuantity() {
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
+  document.getElementById("quantity").value = weight * trays;
+}
+document.getElementById("weight").addEventListener("input", calculateQuantity);
+document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
+</script>
