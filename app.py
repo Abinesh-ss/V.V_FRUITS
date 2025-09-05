@@ -361,7 +361,8 @@ def open_whatsapp():
 # Initialize DB if running locally
 # --------------------------
 if __name__ == '__main__':
-    # Create tables locally if not exist (no-op on Railway when DB already has schema)
     with app.app_context():
+        # 🔑 Create tables in DB if they don't exist
         db.create_all()
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=False)
+        print("✅ Tables created (if not already present).")
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)
