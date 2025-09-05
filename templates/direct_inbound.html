@@ -29,3 +29,12 @@
   </tbody>
 </table>
 {% endblock %}
+<script>
+function calculateQuantity() {
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
+  document.getElementById("quantity").value = weight * trays;
+}
+document.getElementById("weight").addEventListener("input", calculateQuantity);
+document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
+</script>
