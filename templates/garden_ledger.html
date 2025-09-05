@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Garden Ledger</h3>
+
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Name / Product</th>
+      <th>Total Weight</th>
+      <th>No of Trays</th>
+      <th>Quantity</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if rows %}
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.name if r.name else r.product }}</td>
+        <td>{{ r.whole_weight if r.whole_weight else r.total_weight }}</td>
+        <td>{{ r.no_of_trays }}</td>
+        <td>{{ r.quantity }}</td>
+        <td>{{ r.timestamp }}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="5">No entries found</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}

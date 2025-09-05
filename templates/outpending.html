@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Out Pending</h3>
+
+<form method="POST" action="{{ url_for('add_outpending') }}" class="row g-2 mb-4">
+  <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
+  <div class="col-md-3"><input step="0.01" class="form-control" name="amount_pending" placeholder="Amount Pending" required></div>
+  <div class="col-md-4"><input class="form-control" name="last_purchase" placeholder="Last Purchase (optional)"></div>
+  <div class="col-12 mt-2"><button class="btn btn-primary" type="submit">Add Out Pending</button></div>
+</form>
+
+<table class="table table-sm">
+  <thead><tr><th>Name</th><th>Amount Pending</th><th>Last Purchase</th><th>Timestamp</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.amount_pending }}</td>
+        <td>{{ r.last_purchase or '-' }}</td>
+        <td>{{ r.timestamp.strftime('%Y-%m-%d %H:%M:%S') if r.timestamp else '-' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="text-center">No records</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

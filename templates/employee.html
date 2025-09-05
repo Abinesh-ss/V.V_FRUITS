@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Employees</h3>
+
+<form method="POST" action="{{ url_for('add_employee') }}" class="row g-2 mb-4">
+  <div class="col-md-4"><input class="form-control" name="name" placeholder="Employee Name" required></div>
+  <div class="col-md-2"><input step="0.01" class="form-control" name="perday_salary" placeholder="Per day salary" required></div>
+  <div class="col-md-2"><input type="number" class="form-control" name="days_worked" placeholder="Days worked" required></div>
+  <div class="col-md-2"><input step="0.01" class="form-control" name="advance" placeholder="Advance (optional)"></div>
+  <div class="col-12 mt-2"><button class="btn btn-primary" type="submit">Add Employee</button></div>
+</form>
+
+<table class="table table-sm">
+  <thead><tr><th>Name</th><th>Perday</th><th>Days</th><th>Advance</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.perday_salary }}</td>
+        <td>{{ r.days_worked }}</td>
+        <td>{{ r.advance or 0 }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="text-center">No employees</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h5>WhatsApp message preview</h5>
+<pre>{{ text }}</pre>
+<p>
+  <a class="btn btn-success" href="{{ link }}" target="_blank">Open WhatsApp Web / App</a>
+</p>
+<p class="text-muted">Note: Replace the phone number in code with real buyer/seller number or modify UI to accept numbers.</p>
+{% endblock %}

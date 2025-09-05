@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Auction</h3>
+
+<form method="POST" action="{{ url_for('add_auction') }}" class="row g-2 mb-4">
+  <div class="col-md-3"><input class="form-control" name="seller" placeholder="Seller" required></div>
+  <div class="col-md-3"><input class="form-control" name="product" placeholder="Product" required></div>
+  <div class="col-md-2"><input step="0.01" class="form-control" name="total_weight" placeholder="Total Weight" required></div>
+  <div class="col-md-1"><input type="number" class="form-control" name="no_of_trays" placeholder="Trays" required></div>
+  <div class="col-md-1"><input step="0.01" class="form-control" name="quantity" placeholder="Quantity" required></div>
+  <div class="col-md-2"><input step="0.01" class="form-control" name="sold_price_per_unit" placeholder="Sold Price/unit" required></div>
+  <div class="col-md-3"><input class="form-control" name="buyer_name" placeholder="Buyer (optional)"></div>
+  <div class="col-12 mt-2"><button class="btn btn-primary" type="submit">Add Auction</button></div>
+</form>
+
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>Seller</th><th>Product</th><th>Total Weight</th><th>Trays</th><th>Quantity</th><th>Price/unit</th><th>Buyer</th><th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in auctions %}
+      <tr>
+        <td>{{ row.seller }}</td>
+        <td>{{ row.product }}</td>
+        <td>{{ row.total_weight }}</td>
+        <td>{{ row.no_of_trays }}</td>
+        <td>{{ row.quantity }}</td>
+        <td>{{ row.sold_price_per_unit }}</td>
+        <td>{{ row.buyer_name or '-' }}</td>
+        <td>{{ row.timestamp.strftime('%Y-%m-%d %H:%M:%S') if row.timestamp else '-' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="text-center">No auction records</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
