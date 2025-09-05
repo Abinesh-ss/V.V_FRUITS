@@ -30,13 +30,14 @@ logger = logging.getLogger(__name__)
 class Auction(db.Model):
     __tablename__ = 'auction'
     id = db.Column(db.Integer, primary_key=True)
-    seller = db.Column(db.String, nullable=False)
-    product = db.Column(db.String, nullable=False)
-    total_weight = db.Column(db.Float, nullable=False)
+    seller_name = db.Column(db.String(100), nullable=False)
+    product = db.Column(db.String(100), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
     no_of_trays = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
-    sold_price_per_unit = db.Column(db.Float, nullable=False)
-    buyer_name = db.Column(db.String, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    buyer_name = db.Column(db.String(100), nullable=False)
+    bill_amount = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -135,6 +136,7 @@ def add_auction():
         quantity = weight * no_of_trays
         sold_price_per_unit = parse_float(request.form.get('sold_price_per_unit'))
         buyer_name = request.form.get('buyer_name') or None
+        bill_amount = quantity * price
 
         # Basic validation
         if not seller or not product:
@@ -142,13 +144,14 @@ def add_auction():
             return redirect(url_for('auction'))
 
         new_row = Auction(
-            seller=seller,
-            product=product,
-            total_weight=total_weight,
+            seller_name=request.form.get('seller_name'),
+            product=request.form.get('product'),
+            weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity,
-            sold_price_per_unit=sold_price_per_unit,
-            buyer_name=buyer_name,
+            price=price,
+            buyer_name=request.form.get('buyer_name'),
+            bill_amount=bill_amount
         )
         db.session.add(new_row)
         db.session.commit()
