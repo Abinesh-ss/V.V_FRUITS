@@ -132,7 +132,7 @@ def add_auction():
         product = request.form.get('product', '').strip()
         total_weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = parse_float(request.form.get('quantity'))
+        quantity = weight * no_of_trays
         sold_price_per_unit = parse_float(request.form.get('sold_price_per_unit'))
         buyer_name = request.form.get('buyer_name') or None
 
@@ -173,7 +173,7 @@ def add_available_stock():
         product = request.form.get('product', '').strip()
         total_weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = parse_float(request.form.get('quantity'))
+        quantity = weight * no_of_trays
 
         if not product:
             flash("Product is required.", "danger")
@@ -208,7 +208,7 @@ def add_direct_inbound():
         name = request.form.get('name', '').strip()
         whole_weight = parse_float(request.form.get('whole_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = parse_float(request.form.get('quantity'))
+        quantity = weight * no_of_trays
         seller_name = request.form.get('seller_name') or None
 
         if not name:
@@ -313,7 +313,7 @@ def add_outbound():
         product = request.form.get('product', '').strip()
         total_weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = parse_float(request.form.get('quantity'))
+        quantity = weight * no_of_trays
 
         if not product:
             flash("Product is required.", "danger")
