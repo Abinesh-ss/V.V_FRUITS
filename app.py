@@ -79,6 +79,16 @@ class OutPending(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class GardenLedger(db.Model):
+    __tablename__ = 'garden_ledger'
+    id = db.Column(db.Integer, primary_key=True)
+    product = db.Column(db.String, nullable=False)
+    total_weight = db.Column(db.Float, nullable=False)
+    no_of_trays = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class Outbound(db.Model):
     __tablename__ = 'outbound'
     id = db.Column(db.Integer, primary_key=True)
@@ -236,6 +246,41 @@ def add_direct_inbound():
         logger.exception("Error adding direct inbound")
         flash(f"Error: {str(e)}", "danger")
     return redirect(url_for('direct_inbound'))
+
+
+# ---------- GARDEN LEDGER ----------
+@app.route('/garden_ledger')
+def garden_ledger():
+    rows = GardenLedger.query.order_by(GardenLedger.timestamp.desc()).all()
+    return render_template('garden_ledger.html', rows=rows)
+
+
+@app.route('/add_garden_ledger', methods=['POST'])
+def add_garden_ledger():
+    try:
+        product = request.form.get('product', '').strip()
+        weight = parse_float(request.form.get('total_weight'))
+        no_of_trays = parse_int(request.form.get('no_of_trays'))
+        quantity = calc_quantity(weight, no_of_trays)
+
+        if not product:
+            flash("Product is required.", "danger")
+            return redirect(url_for('garden_ledger'))
+
+        new_row = GardenLedger(
+            product=product,
+            total_weight=weight,
+            no_of_trays=no_of_trays,
+            quantity=quantity
+        )
+        db.session.add(new_row)
+        db.session.commit()
+        flash("Garden Ledger entry added.", "success")
+    except Exception as e:
+        db.session.rollback()
+        logger.exception("Error adding garden ledger entry")
+        flash(f"Error: {str(e)}", "danger")
+    return redirect(url_for('garden_ledger'))
 
 
 # ---------- EMPLOYEE ----------
