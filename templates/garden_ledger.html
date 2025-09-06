@@ -2,8 +2,35 @@
 {% block content %}
 <h3>Garden Ledger</h3>
 
-<table class="table table-sm">
-  <thead>
+<form method="POST" action="{{ url_for('add_garden_ledger') }}" class="row g-2 mb-4">
+  <!-- Name / Product (user can fill either one) -->
+  <div class="col-md-4">
+    <input class="form-control" name="name" placeholder="Name (for inbound)">
+  </div>
+  <div class="col-md-4">
+    <input class="form-control" name="product" placeholder="Product (for stock/outbound)">
+  </div>
+
+  <!-- Weight -->
+  <div class="col-md-2">
+    <input step="0.01" class="form-control" id="weight" name="total_weight" placeholder="Weight" required>
+  </div>
+
+  <!-- Trays -->
+  <div class="col-md-2">
+    <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
+  </div>
+
+  <!-- Hidden Quantity -->
+  <input type="hidden" name="quantity" id="quantity">
+
+  <div class="col-12 mt-2">
+    <button class="btn btn-primary" type="submit">Add Ledger Entry</button>
+  </div>
+</form>
+
+<table class="table table-sm table-bordered table-striped">
+  <thead class="table-dark">
     <tr>
       <th>Name / Product</th>
       <th>Total Weight</th>
@@ -20,14 +47,24 @@
         <td>{{ r.whole_weight if r.whole_weight else r.total_weight }}</td>
         <td>{{ r.no_of_trays }}</td>
         <td>{{ r.quantity }}</td>
-        <td>{{ r.timestamp }}</td>
+        <td>{{ r.timestamp.strftime('%Y-%m-%d %H:%M:%S') if r.timestamp else '-' }}</td>
       </tr>
       {% endfor %}
     {% else %}
       <tr>
-        <td colspan="5">No entries found</td>
+        <td colspan="5" class="text-center">No entries found</td>
       </tr>
     {% endif %}
   </tbody>
 </table>
 {% endblock %}
+
+<script>
+function calculateQuantity() {
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
+  document.getElementById("quantity").value = (weight * trays).toFixed(2);
+}
+document.getElementById("weight").addEventListener("input", calculateQuantity);
+document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
+</script>
