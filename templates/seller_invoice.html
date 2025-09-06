@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Seller Invoice: {{ seller }}</h3>
+
+<form method="POST">
+  <table class="table table-sm table-bordered" id="products_table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Total Weight</th>
+        <th>Trays</th>
+        <th>Quantity</th>
+        <th>Price/unit</th>
+        <th>Bill Amount</th>
+        <th>Buyer</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input class="form-control" name="product[]" required></td>
+        <td><input class="form-control total_weight" name="total_weight[]" step="0.01" required></td>
+        <td><input class="form-control no_of_trays" name="no_of_trays[]" type="number" required></td>
+        <td class="quantity">0</td>
+        <td><input class="form-control sold_price_per_unit" name="sold_price_per_unit[]" step="0.01" required></td>
+        <td class="bill_amount">0</td>
+        <td><input class="form-control" name="buyer_name[]"></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row">X</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-secondary" id="add_row">Add Product</button>
+  <button type="submit" class="btn btn-primary">Save Invoice</button>
+</form>
+
+<div class="mt-3">
+  <h5>Total Bill: <span id="total_bill">{{ total_bill }}</span></h5>
+  <h5>Discounted Bill (10% off): <span id="discounted_bill">{{ discounted_bill }}</span></h5>
+</div>
+
+<script>
+function recalc() {
+    let total = 0;
+    document.querySelectorAll('#products_table tbody tr').forEach(row => {
+        const weight = parseFloat(row.querySelector('.total_weight').value) || 0;
+        const trays = parseFloat(row.querySelector('.no_of_trays').value) || 0;
+        const price = parseFloat(row.querySelector('.sold_price_per_unit').value) || 0;
+        const quantity = weight - 2 * trays;
+        row.querySelector('.quantity').innerText = quantity.toFixed(2);
+        const bill = quantity * price;
+        row.querySelector('.bill_amount').innerText = bill.toFixed(2);
+        total += bill;
+    });
+    document.getElementById('total_bill').innerText = total.toFixed(2);
+    document.getElementById('discounted_bill').innerText = (total*0.9).toFixed(2);
+}
+
+document.getElementById('products_table').addEventListener('input', recalc);
+document.getElementById('add_row').addEventListener('click', () => {
+    const tbody = document.querySelector('#products_table tbody');
+    const newRow = tbody.rows[0].cloneNode(true);
+    newRow.querySelectorAll('input').forEach(i => i.value = '');
+    newRow.querySelector('.quantity').innerText = '0';
+    newRow.querySelector('.bill_amount').innerText = '0';
+    tbody.appendChild(newRow);
+});
+document.querySelector('#products_table').addEventListener('click', e => {
+    if(e.target.classList.contains('remove-row')) e.target.closest('tr').remove();
+    recalc();
+});
+
+recalc(); // initial calc
+</script>
+{% endblock %}
