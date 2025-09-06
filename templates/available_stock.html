@@ -3,16 +3,33 @@
 <h3>Available Stock</h3>
 
 <form method="POST" action="{{ url_for('add_available_stock') }}" class="row g-2 mb-4">
-  <div class="col-md-4"><input class="form-control" name="product" placeholder="Product" required></div>
-  <div class="col-md-2"><input step="0.01" class="form-control" name="total_weight" placeholder="Total Weight" required></div>
-  <div class="col-md-2"><input type="number" class="form-control" name="no_of_trays" placeholder="Trays" required></div>
-  <div class="col-md-2"><input step="0.01" class="form-control" name="quantity" placeholder="Quantity" required></div>
-  <div class="col-12 mt-2"><button class="btn btn-primary" type="submit">Add Stock</button></div>
+  <div class="col-md-4">
+    <input class="form-control" name="product" placeholder="Product" required>
+  </div>
+  <div class="col-md-2">
+    <input step="0.01" class="form-control" id="weight" name="total_weight" placeholder="Total Weight" required>
+  </div>
+  <div class="col-md-2">
+    <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
+  </div>
+
+  <!-- 🔒 Hidden Quantity (auto-calculated) -->
+  <input type="hidden" name="quantity" id="quantity">
+
+  <div class="col-12 mt-2">
+    <button class="btn btn-primary" type="submit">Add Stock</button>
+  </div>
 </form>
 
-<table class="table table-sm">
-  <thead>
-    <tr><th>Product</th><th>Total Weight</th><th>Trays</th><th>Quantity</th><th>Timestamp</th></tr>
+<table class="table table-sm table-bordered table-striped">
+  <thead class="table-dark">
+    <tr>
+      <th>Product</th>
+      <th>Total Weight</th>
+      <th>Trays</th>
+      <th>Quantity</th>
+      <th>Timestamp</th>
+    </tr>
   </thead>
   <tbody>
     {% for r in rows %}
@@ -29,3 +46,13 @@
   </tbody>
 </table>
 {% endblock %}
+
+<script>
+function calculateQuantity() {
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
+  document.getElementById("quantity").value = (weight * trays).toFixed(2);
+}
+document.getElementById("weight").addEventListener("input", calculateQuantity);
+document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
+</script>
