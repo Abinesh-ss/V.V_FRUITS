@@ -2,37 +2,27 @@
 {% block content %}
 <h3>Garden Ledger</h3>
 
+<!-- Form to Add Entries -->
 <form method="POST" action="{{ url_for('add_garden_ledger') }}" class="row g-2 mb-4">
-  <!-- Name / Product (user can fill either one) -->
   <div class="col-md-4">
-    <input class="form-control" name="name" placeholder="Name (for inbound)">
+    <input class="form-control" name="product" placeholder="Product" required>
   </div>
-  <div class="col-md-4">
-    <input class="form-control" name="product" placeholder="Product (for stock/outbound)">
-  </div>
-
-  <!-- Weight -->
   <div class="col-md-2">
-    <input step="0.01" class="form-control" id="weight" name="total_weight" placeholder="Weight" required>
+    <input step="0.01" class="form-control" name="total_weight" placeholder="Total Weight" required>
   </div>
-
-  <!-- Trays -->
   <div class="col-md-2">
-    <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
+    <input type="number" class="form-control" name="no_of_trays" placeholder="No of Trays" required>
   </div>
-
-  <!-- Hidden Quantity -->
-  <input type="hidden" name="quantity" id="quantity">
-
   <div class="col-12 mt-2">
     <button class="btn btn-primary" type="submit">Add Ledger Entry</button>
   </div>
 </form>
 
-<table class="table table-sm table-bordered table-striped">
-  <thead class="table-dark">
+<!-- Table of Entries -->
+<table class="table table-sm table-bordered">
+  <thead class="table-light">
     <tr>
-      <th>Name / Product</th>
+      <th>Product</th>
       <th>Total Weight</th>
       <th>No of Trays</th>
       <th>Quantity</th>
@@ -43,8 +33,8 @@
     {% if rows %}
       {% for r in rows %}
       <tr>
-        <td>{{ r.name if r.name else r.product }}</td>
-        <td>{{ r.whole_weight if r.whole_weight else r.total_weight }}</td>
+        <td>{{ r.product }}</td>
+        <td>{{ r.total_weight }}</td>
         <td>{{ r.no_of_trays }}</td>
         <td>{{ r.quantity }}</td>
         <td>{{ r.timestamp.strftime('%Y-%m-%d %H:%M:%S') if r.timestamp else '-' }}</td>
@@ -58,13 +48,3 @@
   </tbody>
 </table>
 {% endblock %}
-
-<script>
-function calculateQuantity() {
-  let weight = parseFloat(document.getElementById("weight").value) || 0;
-  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
-  document.getElementById("quantity").value = (weight * trays).toFixed(2);
-}
-document.getElementById("weight").addEventListener("input", calculateQuantity);
-document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
-</script>
