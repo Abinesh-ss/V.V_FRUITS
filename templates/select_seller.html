@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Enter Seller Name</h3>
+<form method="POST" class="row g-2">
+  <div class="col-md-4">
+    <input class="form-control" name="seller" placeholder="Seller Name" required>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary">Proceed</button>
+  </div>
+</form>
+{% endblock %}
