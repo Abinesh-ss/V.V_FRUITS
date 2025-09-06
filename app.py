@@ -27,16 +27,13 @@ logger = logging.getLogger(__name__)
 # MODELS
 # --------------------------
 class Auction(db.Model):
-    __tablename__ = 'auction'
     id = db.Column(db.Integer, primary_key=True)
-    seller_name = db.Column(db.String(100), nullable=False)
+    seller = db.Column(db.String(100), nullable=False)
     product = db.Column(db.String(100), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
+    total_weight = db.Column(db.Float, nullable=False)
     no_of_trays = db.Column(db.Integer, nullable=False)
-    quantity = db.Column(db.Float, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    buyer_name = db.Column(db.String(100), nullable=False)
-    bill_amount = db.Column(db.Float, nullable=False)
+    sold_price_per_unit = db.Column(db.Float, nullable=False)
+    buyer_name = db.Column(db.String(100))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -377,6 +374,46 @@ def add_outbound():
         logger.exception("Error adding outbound")
         flash(f"Error: {str(e)}", "danger")
     return redirect(url_for('outbound'))
+
+@app.route("/", methods=["GET", "POST"])
+def select_seller():
+    if request.method == "POST":
+        seller_name = request.form.get("seller")
+        if seller_name:
+            return redirect(url_for("seller_invoice", seller=seller_name))
+    return render_template("select_seller.html")
+
+# Step 2: Multi-product invoice for seller
+@app.route("/seller_invoice/<seller>", methods=["GET", "POST"])
+def seller_invoice(seller):
+    if request.method == "POST":
+        products = request.form.getlist("product[]")
+        total_weights = request.form.getlist("total_weight[]")
+        trays = request.form.getlist("no_of_trays[]")
+        prices = request.form.getlist("sold_price_per_unit[]")
+        buyers = request.form.getlist("buyer_name[]")
+        
+        for i in range(len(products)):
+            if products[i]:  # skip empty rows
+                auction = Auction(
+                    seller=seller,
+                    product=products[i],
+                    total_weight=float(total_weights[i]),
+                    no_of_trays=int(trays[i]),
+                    sold_price_per_unit=float(prices[i]),
+                    buyer_name=buyers[i] or None
+                )
+                db.session.add(auction)
+        db.session.commit()
+        flash("Products added successfully!", "success")
+        return redirect(url_for("seller_invoice", seller=seller))
+
+    auctions = Auction.query.filter_by(seller=seller).all()
+    total_bill = sum((a.total_weight - 2*a.no_of_trays) * a.sold_price_per_unit for a in auctions)
+    discounted_bill = total_bill * 0.9  # 10% discount
+    
+    return render_template("seller_invoice.html", seller=seller, auctions=auctions,
+                           total_bill=total_bill, discounted_bill=discounted_bill)
 
 
 # ---------- SIMPLE PAGES ----------
