@@ -397,11 +397,6 @@ def vehicles():
     return render_template('vehicles.html')
 
 
-@app.route('/garden_ledger')
-def garden_ledger():
-    return render_template('garden_ledger.html')
-
-
 @app.route('/open_whatsapp')
 def open_whatsapp():
     return render_template('open_whatsapp.html')
