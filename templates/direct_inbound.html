@@ -12,9 +12,10 @@
   <div class="col-md-2">
     <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
   </div>
-  <div class="col-md-2">
-    <input step="0.01" class="form-control" name="quantity" id="quantity" placeholder="Quantity" readonly>
-  </div>
+
+  <!-- 🔒 Hidden Quantity (auto-calculated) -->
+  <input type="hidden" name="quantity" id="quantity">
+
   <div class="col-md-4 mt-2">
     <input class="form-control" name="seller_name" placeholder="Seller Name (optional)">
   </div>
