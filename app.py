@@ -80,14 +80,13 @@ class OutPending(db.Model):
 
 
 class GardenLedger(db.Model):
-    __tablename__ = 'garden_ledger'
-    id = db.Column(db.Integer, primary_key=True)
-    product = db.Column(db.String, nullable=False)
-    total_weight = db.Column(db.Float, nullable=False)
-    no_of_trays = db.Column(db.Integer, nullable=False)
-    quantity = db.Column(db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = "garden_ledger"
 
+    id = db.Column(db.Integer, primary_key=True)
+    garden_name = db.Column(db.String(100), nullable=False)
+    advance_given = db.Column(db.Float, nullable=False)
+    total_amount_procured = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Outbound(db.Model):
     __tablename__ = 'outbound'
@@ -250,37 +249,31 @@ def add_direct_inbound():
 
 # ---------- GARDEN LEDGER ----------
 @app.route('/garden_ledger')
+@app.route("/garden_ledger", methods=["GET", "POST"])
 def garden_ledger():
-    rows = GardenLedger.query.order_by(GardenLedger.timestamp.desc()).all()
-    return render_template('garden_ledger.html', rows=rows)
+    if request.method == "POST":
+        garden_name = request.form["garden_name"]
+        advance_given = float(request.form["advance_given"])
+        total_amount_procured = float(request.form["total_amount_procured"])
 
-
-@app.route('/add_garden_ledger', methods=['POST'])
-def add_garden_ledger():
-    try:
-        product = request.form.get('product', '').strip()
-        weight = parse_float(request.form.get('total_weight'))
-        no_of_trays = parse_int(request.form.get('no_of_trays'))
-        quantity = calc_quantity(weight, no_of_trays)
-
-        if not product:
-            flash("Product is required.", "danger")
-            return redirect(url_for('garden_ledger'))
-
-        new_row = GardenLedger(
-            product=product,
-            total_weight=weight,
-            no_of_trays=no_of_trays,
-            quantity=quantity
+        new_entry = GardenLedger(
+            garden_name=garden_name,
+            advance_given=advance_given,
+            total_amount_procured=total_amount_procured,
         )
-        db.session.add(new_row)
+        db.session.add(new_entry)
         db.session.commit()
-        flash("Garden Ledger entry added.", "success")
-    except Exception as e:
-        db.session.rollback()
-        logger.exception("Error adding garden ledger entry")
-        flash(f"Error: {str(e)}", "danger")
-    return redirect(url_for('garden_ledger'))
+        flash("Garden Ledger entry added!", "success")
+        return redirect(url_for("garden_ledger"))
+
+    # Sorting option
+    sort = request.args.get("sort", "timestamp")  # default sort by timestamp
+    if sort == "garden_name":
+        rows = GardenLedger.query.order_by(GardenLedger.garden_name).all()
+    else:
+        rows = GardenLedger.query.order_by(GardenLedger.timestamp.desc()).all()
+
+    return render_template("garden_ledger.html", rows=rows, sort=sort)
 
 
 # ---------- EMPLOYEE ----------
