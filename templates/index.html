@@ -1,100 +1,63 @@
 {% extends "base.html" %}
-
 {% block content %}
-<style>
-  /* Force full dark theme */
-  body {
-    background-color: #1b2b2c !important; /* dark teal background */
-    color: white !important;              /* default text color */
-  }
+<h3>Direct Inbound</h3>
 
-  /* Fix Bootstrap background overrides */
-  .bg-light, .bg-white, .bg-body {
-    background-color: #1b2b2c !important;
-    color: white !important;
-  }
-
-  /* Floating fruit animations */
-  .floating {
-    position: absolute;
-    animation: float 6s ease-in-out infinite;
-    width: 8vw;     
-    max-width: 90px; 
-    height: auto;    
-}
-
-  }
-  .floating:nth-child(1) { animation-duration: 5s; }
-  .floating:nth-child(2) { animation-duration: 7s; }
-  .floating:nth-child(3) { animation-duration: 6.5s; }
-  .floating:nth-child(4) { animation-duration: 8s; }
-
-  @keyframes float {
-    0%   { transform: translateY(0px); }
-    50%  { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
-
-  /* Logo */
-  .logo img {
-    width: 270px;
-    margin-top: -10px;
-    border-radius: 12px;
-  }
-
-  /* Subtext under logo */
-  .about {
-    margin-top: 10px;
-    font-size: 1.1rem;
-    color: orange;
-  }
-
-  /* Card grid */
-  .card-grid {
-    margin-top: 50px;
-    padding: 20px;
-  }
-
-  .option-card {
-    background: #2c3e3f !important;
-    color: white !important;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
-  }
-  .option-card:hover {
-    transform: translateY(-5px);
-    background: #365050 !important;
-  }
-</style>
-
-<!-- floating fruits -->
-<img src="https://img.icons8.com/color/96/orange.png" class="floating" style="top: 170px; right: 15%;" />
-<img src="https://img.icons8.com/external-flat-gradient-andi-nur-abdillah/64/external-mangosteen-vegetable-and-fruit-flat-gradient-flat-gradient-andi-nur-abdillah.png" class="floating" style="top: 90px; right: 20%;" />
-<img src="https://img.icons8.com/external-wanicon-flat-wanicon/64/external-durian-fruits-and-vegetables-wanicon-flat-wanicon.png" class="floating" style="top: 100px; left: 14%;" />
-<img src="https://img.icons8.com/external-vitaliy-gorbachev-lineal-color-vitaly-gorbachev/60/external-rambutan-fruit-vitaliy-gorbachev-lineal-color-vitaly-gorbachev.png" class="floating" style="top: 190px; left: 18%;" />
-
-<!-- center logo -->
-<div class="text-center">
-  <div class="logo">
-    <img src="{{ url_for('static', filename='images/vvfruits.png') }}" alt="VV Fruits Logo">
+<form method="POST" action="{{ url_for('add_direct_inbound') }}" class="row g-2 mb-4">
+  <div class="col-md-4">
+    <input class="form-control" name="name" placeholder="Name" required>
   </div>
-  <div class="about">
-    Fresh Fruits • Daily Auctions • Wholesale & Retail
+  <div class="col-md-2">
+    <input step="0.01" class="form-control" id="weight" name="whole_weight" placeholder="Whole Weight" required>
   </div>
-</div>
+  <div class="col-md-2">
+    <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
+  </div>
 
-<!-- options grid -->
-<div class="card-grid">
-  <div class="row row-cols-1 row-cols-md-4 g-3">
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+  <!-- 🔒 Hidden Quantity (auto-calculated) -->
+  <input type="hidden" name="quantity" id="quantity">
+
+  <div class="col-md-4 mt-2">
+    <input class="form-control" name="seller_name" placeholder="Seller Name (optional)">
   </div>
-</div>
+  <div class="col-12 mt-2">
+    <button class="btn btn-primary" type="submit">Add Inbound</button>
+  </div>
+</form>
+
+<table class="table table-sm table-bordered table-striped">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Weight</th>
+      <th>Trays</th>
+      <th>Quantity</th>
+      <th>Seller</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.whole_weight }}</td>
+        <td>{{ r.no_of_trays }}</td>
+        <td>{{ r.quantity }}</td>
+        <td>{{ r.seller_name or '-' }}</td>
+        <td>{{ r.timestamp.strftime('%Y-%m-%d %H:%M:%S') if r.timestamp else '-' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center">No records</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
+
+<script>
+function calculateQuantity() {
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
+  document.getElementById("quantity").value = (weight * trays).toFixed(2);
+}
+document.getElementById("weight").addEventListener("input", calculateQuantity);
+document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
+</script>
