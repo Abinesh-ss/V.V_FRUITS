@@ -8,6 +8,12 @@ import logging
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret")
 
+users = {
+    "vallam": {"password": "shops", "role": "staff_vc"},
+    "kerala": {"password": "thoztham", "role": "staff_kerala"},
+    "ceo": {"password": "allinall", "role": "ceo"},
+}
+
 # DATABASE: use DATABASE_URL from Railway. Fallback to sqlite for local testing.
 database_url = os.environ.get("DATABASE_URL", "sqlite:///local_dev.db")
 if database_url.startswith("postgres://"):
@@ -142,44 +148,25 @@ def calc_quantity(weight, trays):
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username").lower()
+        password = request.form.get("password")
 
-        user = StaffUser.query.filter_by(username=username, password=password).first()
-
-        if user:
-            session["username"] = user.username
-            session["role"] = user.role
-            flash("Login successful!", "success")
+        if username in users and users[username]["password"] == password:
+            session["user"] = username
+            session["role"] = users[username]["role"]
             return redirect(url_for("index"))
         else:
-            flash("Invalid username or password", "danger")
+            flash("Invalid username or password")
             return redirect(url_for("login"))
-
-    # If already logged in → show index.html with role-based options
-    if "role" in session:
-        return render_template("index.html", role=session["role"])
     return render_template("login.html")
 
-
-# --- Dashboard Page ---
-@app.route("/dashboard")
-def dashboard():
-    if "user_id" not in session:
+@app.route("/index")
+def index():
+    if "role" not in session:
         return redirect(url_for("login"))
 
-    user = StaffUser.query.get(session["user_id"])
-
-    if user.role == "vallam_chennai":
-        options = ["Auction", "Stock"]
-    elif user.role == "kerala":
-        options = ["Garden Ledger", "Outbound", "Vehicles"]
-    elif user.role == "ceo":
-        options = ["Auction", "Stock", "Garden Ledger", "Outbound", "Vehicles", "Employees", "Reports"]
-    else:
-        options = []
-
-    return render_template("dashboard.html", options=options, role=user.role)
+    role = session["role"]
+    return render_template("index.html", role=role)
 
 # --- Logout ---
 @app.route("/logout")
