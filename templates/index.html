@@ -2,70 +2,25 @@
 
 {% block content %}
 <style>
-  /* Force full dark theme */
   body {
-    background-color: #1b2b2c !important; /* dark teal background */
-    color: white !important;              /* default text color */
+    background-color: #1b2b2c !important;
+    color: white !important;
   }
-
-  /* Fix Bootstrap background overrides */
   .bg-light, .bg-white, .bg-body {
     background-color: #1b2b2c !important;
     color: white !important;
   }
-
-  /* Floating fruit animations */
-  .floating {
-    position: absolute;
-    animation: float 6s ease-in-out infinite;
-    width: 8vw;     
-    max-width: 90px; 
-    height: auto;    
-}
-
-  }
+  .floating { position: absolute; animation: float 6s ease-in-out infinite; width: 8vw; max-width: 90px; height: auto; }
   .floating:nth-child(1) { animation-duration: 5s; }
   .floating:nth-child(2) { animation-duration: 7s; }
   .floating:nth-child(3) { animation-duration: 6.5s; }
   .floating:nth-child(4) { animation-duration: 8s; }
-
-  @keyframes float {
-    0%   { transform: translateY(0px); }
-    50%  { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
-
-  /* Logo */
-  .logo img {
-    width: 270px;
-    margin-top: -10px;
-    border-radius: 12px;
-  }
-
-  /* Subtext under logo */
-  .about {
-    margin-top: 10px;
-    font-size: 1.1rem;
-    color: orange;
-  }
-
-  /* Card grid */
-  .card-grid {
-    margin-top: 50px;
-    padding: 20px;
-  }
-
-  .option-card {
-    background: #2c3e3f !important;
-    color: white !important;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
-  }
-  .option-card:hover {
-    transform: translateY(-5px);
-    background: #365050 !important;
-  }
+  @keyframes float { 0% { transform: translateY(0px);} 50% {transform: translateY(-20px);} 100% {transform: translateY(0px);} }
+  .logo img { width: 270px; margin-top: -10px; border-radius: 12px; }
+  .about { margin-top: 10px; font-size: 1.1rem; color: orange; }
+  .card-grid { margin-top: 50px; padding: 20px; }
+  .option-card { background: #2c3e3f !important; color: white !important; border-radius: 12px; box-shadow: 0px 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease; }
+  .option-card:hover { transform: translateY(-5px); background: #365050 !important; }
 </style>
 
 <!-- floating fruits -->
@@ -87,14 +42,34 @@
 <!-- options grid -->
 <div class="card-grid">
   <div class="row row-cols-1 row-cols-md-4 g-3">
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
-    <div class="col"><a class="text-decoration-none" href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+
+    {# Vallam & Chennai staff options #}
+    {% if role == 'vallam_chennai' %}
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
+    {% endif %}
+
+    {# Kerala staff options #}
+    {% if role == 'kerala' %}
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+    {% endif %}
+
+    {# CEO options (can see all) #}
+    {% if role == 'ceo' %}
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
+      <div class="col"><a class="text-decoration-none" href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}
