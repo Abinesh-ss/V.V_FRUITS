@@ -43,6 +43,31 @@ class StaffUser(db.Model):
     password = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(50), nullable=False)
 
+class StaffUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)  # store hashed in production
+    role = db.Column(db.String(50), nullable=False)       # vallam_chennai / kerala / ceo
+
+# --------------------------
+# ADD DEFAULT USERS
+# --------------------------
+with app.app_context():
+    users = [
+        {"username": "avallam", "password": "chennai", "role": "vallam_chennai"},
+        {"username": "thoztham", "password": "kerala", "role": "kerala"},
+        {"username": "allinall", "password": "ceo", "role": "ceo"},
+    ]
+
+    for u in users:
+        existing = StaffUser.query.filter_by(username=u["username"]).first()
+        if not existing:
+            new_user = StaffUser(username=u["username"], password=u["password"], role=u["role"])
+            db.session.add(new_user)
+    db.session.commit()
+    print("✅ Users added")
+
+
 
 
 class AvailableStock(db.Model):
@@ -110,21 +135,6 @@ class User(db.Model):
     role = db.Column(db.String(50), nullable=False)  # e.g. "seller", "buyer", "admin"
 
 
-
-users = [
-    {"username": "staff", "password": "shop", "role": "vallam_chennai"},
-    {"username": "staff", "password": "thoztham", "role": "kerala"},
-    {"username": "ceo", "password": "allinall", "role": "ceo"},
-]
-
-for u in users:
-    existing = StaffUser.query.filter_by(username=u["username"]).first()
-    if not existing:
-        new_user = StaffUser(username=u["username"], password=u["password"], role=u["role"])
-        db.session.add(new_user)
-
-db.session.commit()
-print("✅ Users added")
 
 
 # --------------------------
