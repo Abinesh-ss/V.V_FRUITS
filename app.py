@@ -138,11 +138,7 @@ def calc_quantity(weight, trays):
 # --------------------------
 # ROUTES
 # --------------------------
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# --- Login Page ---
+# --- Login + Index Page ---
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -152,13 +148,19 @@ def login():
         user = StaffUser.query.filter_by(username=username, password=password).first()
 
         if user:
-            session["user_id"] = user.id
-            return redirect(url_for("dashboard"))
+            session["username"] = user.username
+            session["role"] = user.role
+            flash("Login successful!", "success")
+            return redirect(url_for("index"))
         else:
-            flash("Invalid login. Please try again.")
+            flash("Invalid username or password", "danger")
             return redirect(url_for("login"))
 
+    # If already logged in → show index.html with role-based options
+    if "role" in session:
+        return render_template("index.html", role=session["role"])
     return render_template("login.html")
+
 
 # --- Dashboard Page ---
 @app.route("/dashboard")
