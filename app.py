@@ -185,13 +185,6 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("Logged out successfully", "info")
-    return redirect(url_for("login"))
-    
-
 
 # ---------- AUCTION ----------
 @app.route('/auction')
@@ -439,7 +432,7 @@ def add_outbound():
         flash(f"Error: {str(e)}", "danger")
     return redirect(url_for('outbound'))
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/select_seller", methods=["GET", "POST"])
 def select_seller():
     if request.method == "POST":
         seller_name = request.form.get("seller")
