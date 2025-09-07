@@ -1,93 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
+{% extends "base.html" %}
+
+{% block content %}
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(to right, #2c3e50, #3498db);
-        font-family: Arial, sans-serif;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-    }
-
-    header {
-        width: 100%;
-        padding: 1rem;
-        text-align: center;
-        background: rgba(0,0,0,0.3);
-        font-size: clamp(1.2rem, 4vw, 1.8rem);
-        font-weight: bold;
-    }
-
-    .options {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        margin-top: 2rem;
-        width: 90%;
-        max-width: 400px;
-    }
-
-    .btn {
-        padding: 1rem;
-        background: #1abc9c;
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-size: 1.1rem;
-        cursor: pointer;
-        text-align: center;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-
-    .btn:hover {
-        background: #16a085;
-    }
-
-    .logout {
-        margin-top: 2rem;
-        background: #e74c3c;
-    }
-
-    .logout:hover {
-        background: #c0392b;
-    }
+  body {
+    background-color: #1b2b2c !important;
+    color: white !important;
+  }
+  .option-card {
+    background: #2c3e3f !important;
+    color: white !important;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+  }
+  .option-card:hover {
+    transform: translateY(-5px);
+    background: #365050 !important;
+  }
 </style>
-</head>
-<body>
-    <header>
-        Welcome, {{ session['name'] }} ({{ session['role']|capitalize }})
-    </header>
 
-    <div class="options">
-        {% if session['role'] == 'vallam' %}
-            <a href="/inbound" class="btn">Inbound</a>
-            <a href="/pending" class="btn">Pending</a>
-            <a href="/bills" class="btn">Bills</a>
+<div class="text-center my-4">
+  <h2>Welcome, {{ session['name'] }}</h2>
+  <p>Your role: <strong>{{ role|capitalize }}</strong></p>
+</div>
 
-        {% elif session['role'] == 'kerala' %}
-            <a href="/garden_ledger" class="btn">Garden Ledger</a>
-            <a href="/outbound" class="btn">Outbound</a>
-            <a href="/vehicles" class="btn">Vehicles</a>
+<div class="card-grid">
+  <div class="row row-cols-1 row-cols-md-4 g-3">
 
-        {% elif session['role'] == 'ceo' %}
-            <a href="/inbound" class="btn">Inbound</a>
-            <a href="/pending" class="btn">Pending</a>
-            <a href="/bills" class="btn">Bills</a>
-            <a href="/garden_ledger" class="btn">Garden Ledger</a>
-            <a href="/outbound" class="btn">Outbound</a>
-            <a href="/vehicles" class="btn">Vehicles</a>
-        {% endif %}
+    {% if role == "vallam" %}
+      <div class="col"><a href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
+      <div class="col"><a href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
+      <div class="col"><a href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
+      <div class="col"><a href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
 
-        <a href="/logout" class="btn logout">Logout</a>
-    </div>
-</body>
-</html>
+    {% elif role == "kerala" %}
+      <div class="col"><a href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
+      <div class="col"><a href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
+      <div class="col"><a href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+
+    {% elif role == "ceo" %}
+      <div class="col"><a href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
+      <div class="col"><a href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
+      <div class="col"><a href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
+      <div class="col"><a href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
+      <div class="col"><a href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
+      <div class="col"><a href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
+      <div class="col"><a href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
+      <div class="col"><a href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+    {% endif %}
+
+    <!-- Logout always visible -->
+    <div class="col"><a href="{{ url_for('logout') }}"><div class="card option-card p-3 text-center">Logout</div></a></div>
+
+  </div>
+</div>
+{% endblock %}
