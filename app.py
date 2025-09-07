@@ -36,6 +36,13 @@ class Auction(db.Model):
     buyer_name = db.Column(db.String(100))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+class StaffUser(db.Model):
+    __tablename__ = "staff_users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)  # store hashed in production
+    role = db.Column(db.String(50), nullable=False)  # vallam_chennai / kerala / ceo
+
 
 class AvailableStock(db.Model):
     __tablename__ = 'available_stock'
@@ -135,43 +142,48 @@ def calc_quantity(weight, trays):
 def index():
     return render_template('index.html')
 
-
-@app.route("/login", methods=["GET", "POST"])
+# --- Login Page ---
+@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form["username"]
+        password = request.form["password"]
 
-        user = User.query.filter_by(username=username, password=password).first()
+        user = StaffUser.query.filter_by(username=username, password=password).first()
+
         if user:
-            session["user"] = user.username
-            session["role"] = user.role
-            flash("Login successful", "success")
+            session["user_id"] = user.id
             return redirect(url_for("dashboard"))
         else:
-            flash("Invalid username or password", "danger")
+            flash("Invalid login. Please try again.")
             return redirect(url_for("login"))
 
     return render_template("login.html")
 
-
+# --- Dashboard Page ---
 @app.route("/dashboard")
 def dashboard():
-    if "user" not in session:
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    role = session["role"]
+    user = StaffUser.query.get(session["user_id"])
 
-    # Show different options based on role
-    if role == "seller":
-        return render_template("dashboard.html", role="seller")
-    elif role == "buyer":
-        return render_template("dashboard.html", role="buyer")
-    elif role == "admin":
-        return render_template("dashboard.html", role="admin")
+    if user.role == "vallam_chennai":
+        options = ["Auction", "Stock"]
+    elif user.role == "kerala":
+        options = ["Garden Ledger", "Outbound", "Vehicles"]
+    elif user.role == "ceo":
+        options = ["Auction", "Stock", "Garden Ledger", "Outbound", "Vehicles", "Employees", "Reports"]
     else:
-        return "Role not recognized"
+        options = []
 
+    return render_template("dashboard.html", options=options, role=user.role)
+
+# --- Logout ---
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 @app.route("/logout")
 def logout():
