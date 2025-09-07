@@ -2,12 +2,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from app import db, StaffUser
 import os
 import logging
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret")
-from app import db, StaffUser
 
 users = [
     {"username": "staff", "password": "shop", "role": "vallam_chennai"},
