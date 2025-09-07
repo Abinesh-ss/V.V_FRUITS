@@ -144,29 +144,42 @@ def calc_quantity(weight, trays):
 # --------------------------
 # ROUTES
 # --------------------------
-# --- Login + Index Page ---
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username").lower()
-        password = request.form.get("password")
+        username = request.form["username"]
+        password = request.form["password"]
 
-        if username in users and users[username]["password"] == password:
-            session["user"] = username
-            session["role"] = users[username]["role"]
+        user = StaffUser.query.filter_by(username=username, password=password).first()
+        if user:
+            session["user_id"] = user.id
+            session["username"] = user.username
+            session["role"] = user.role
             return redirect(url_for("index"))
         else:
-            flash("Invalid username or password")
+            flash("Invalid login. Try again.", "danger")
             return redirect(url_for("login"))
+
     return render_template("login.html")
 
 @app.route("/index")
 def index():
-    if "role" not in session:
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    role = session["role"]
-    return render_template("index.html", role=role)
+    role = session.get("role")
+    options = []
+
+    if role == "vallam_chennai":
+        options = ["Direct Inbound", "Auction", "Available Stock", "Out Pending"]
+    elif role == "kerala":
+        options = ["Garden Ledger", "Outbound", "Vehicles"]
+    elif role == "ceo":
+        options = ["Direct Inbound", "Auction", "Available Stock", "Out Pending",
+                   "Garden Ledger", "Outbound", "Vehicles", "Employees", "Reports"]
+
+    return render_template("index.html", options=options, role=role)
+
 
 # --- Logout ---
 @app.route("/logout")
