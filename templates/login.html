@@ -26,6 +26,21 @@
         text-align: center;
     }
 
+    h1 {
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+        font-weight: bolder;
+        font-family: cursive;
+        color: white;
+        text-shadow: 4px 3px 5px red;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        margin-bottom: 1.2rem;
+        color: #333;
+        font-size: clamp(1rem, 3vw, 1.4rem);
+    }
+
     .textbox {
         margin-bottom: 1rem;
     }
@@ -65,12 +80,14 @@
 </head>
 <body>
     <div class="login-box">
-        <form action="/index" method="post" autocomplete="off">
+        <h1>A Cafeteria for Disabilities</h1>
+        <h2>Login</h2>
+        <form action="/login" method="post" autocomplete="off">
             <div class="textbox">
-                <input type="text" placeholder="Name" name="name" required>
+                <input type="text" placeholder="Name" name="username" required>
             </div>
             <div class="textbox">
-                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Password" name="password" required>
             </div>
             <input type="submit" class="btn" value="Login">
         </form>
