@@ -2,27 +2,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from app import db, StaffUser
 import os
 import logging
 
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret")
-
-users = [
-    {"username": "staff", "password": "shop", "role": "vallam_chennai"},
-    {"username": "staff", "password": "thoztham", "role": "kerala"},
-    {"username": "ceo", "password": "allinall", "role": "ceo"},
-]
-
-for u in users:
-    existing = StaffUser.query.filter_by(username=u["username"]).first()
-    if not existing:
-        new_user = StaffUser(username=u["username"], password=u["password"], role=u["role"])
-        db.session.add(new_user)
-
-db.session.commit()
-print("✅ Users added")
 
 # DATABASE: use DATABASE_URL from Railway. Fallback to sqlite for local testing.
 database_url = os.environ.get("DATABASE_URL", "sqlite:///local_dev.db")
@@ -55,8 +40,8 @@ class Auction(db.Model):
 class StaffUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)  # store hashed in production
-    role = db.Column(db.String(50), nullable=False)       # vallam_chennai / kerala / ceo
+    password = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(50), nullable=False)
 
 
 
@@ -123,6 +108,23 @@ class User(db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(50), nullable=False)  # e.g. "seller", "buyer", "admin"
+
+
+
+users = [
+    {"username": "staff", "password": "shop", "role": "vallam_chennai"},
+    {"username": "staff", "password": "thoztham", "role": "kerala"},
+    {"username": "ceo", "password": "allinall", "role": "ceo"},
+]
+
+for u in users:
+    existing = StaffUser.query.filter_by(username=u["username"]).first()
+    if not existing:
+        new_user = StaffUser(username=u["username"], password=u["password"], role=u["role"])
+        db.session.add(new_user)
+
+db.session.commit()
+print("✅ Users added")
 
 
 # --------------------------
