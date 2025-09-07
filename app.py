@@ -7,12 +7,11 @@ import logging
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret")
-
-users = {
-    "vallam": {"password": "shops", "role": "staff_vc"},
-    "kerala": {"password": "thoztham", "role": "staff_kerala"},
-    "ceo": {"password": "allinall", "role": "ceo"},
-}
+       users = [
+            {"username": "staff", "password": "shop", "role": "vallam_chennai"},
+            {"username": "staff", "password": "thoztham", "role": "kerala"},
+            {"username": "ceo", "password": "allinall", "role": "ceo"},
+        ] doesthis is enough and loginhandles the rest
 
 # DATABASE: use DATABASE_URL from Railway. Fallback to sqlite for local testing.
 database_url = os.environ.get("DATABASE_URL", "sqlite:///local_dev.db")
