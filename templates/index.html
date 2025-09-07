@@ -1,129 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Index Page</title>
+{% extends "base.html" %}
+
+{% block content %}
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(to right, #3498db, #2ecc71);
-        font-family: Arial, sans-serif;
-        min-height: 100vh;
-        overflow: hidden;
-        color: #fff;
-        text-align: center;
-    }
+body {
+    background-color: #1b2b2c !important;
+    color: white !important;
+}
+.bg-light, .bg-white, .bg-body {
+    background-color: #1b2b2c !important;
+    color: white !important;
+}
+.floating {
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+    width: 8vw; max-width: 90px;
+}
+.floating:nth-child(1) { animation-duration: 5s; }
+.floating:nth-child(2) { animation-duration: 7s; }
+.floating:nth-child(3) { animation-duration: 6.5s; }
+.floating:nth-child(4) { animation-duration: 8s; }
 
-    header {
-        padding: 1rem;
-    }
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
 
-    header img {
-        max-width: 120px;
-        height: auto;
-    }
-
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 5px #000;
-    }
-
-    ul {
-        list-style: none;
-        padding: 0;
-        margin-top: 1rem;
-    }
-
-    ul li {
-        background: rgba(255, 255, 255, 0.2);
-        margin: 0.5rem auto;
-        padding: 0.7rem 1rem;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        width: 220px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    ul li:hover {
-        background: rgba(255, 255, 255, 0.4);
-    }
-
-    a {
-        color: white;
-        text-decoration: none;
-    }
-
-    .logout {
-        margin-top: 2rem;
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: #e74c3c;
-        border-radius: 5px;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-        transition: background 0.3s;
-    }
-
-    .logout:hover {
-        background: #c0392b;
-    }
-
-    /* Floating Fruits */
-    .fruit {
-        position: absolute;
-        bottom: -100px;
-        width: 40px;
-        opacity: 0.8;
-        animation: floatUp linear infinite;
-    }
-
-    @keyframes floatUp {
-        0% { transform: translateY(0) rotate(0); opacity: 1; }
-        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
-    }
+.logo img { width: 270px; margin-top: -10px; border-radius: 12px; }
+.about { margin-top: 10px; font-size: 1.1rem; color: orange; }
+.card-grid { margin-top: 50px; padding: 20px; }
+.option-card {
+    background: #2c3e3f !important;
+    color: white !important;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+.option-card:hover { transform: translateY(-5px); background: #365050 !important; }
 </style>
-</head>
-<body>
-    <header>
-        <!-- Replace with your actual logo path -->
-        <img src="/static/logo.png" alt="Cafeteria Logo">
-    </header>
 
-    <h1>Welcome {{ session["user"] }}</h1>
+<!-- floating fruits -->
+<img src="{{ url_for('static', filename='orange.png') }}" class="floating" style="top: 170px; right: 15%;" />
+<img src="{{ url_for('static', filename='mangosteen.png') }}" class="floating" style="top: 90px; right: 20%;" />
+<img src="{{ url_for('static', filename='durian.png') }}" class="floating" style="top: 100px; left: 14%;" />
+<img src="{{ url_for('static', filename='rambutan.png') }}" class="floating" style="top: 190px; left: 18%;" />
 
-    {% if role == "staff_vc" %}
-        <p>Options for Vallam & Chennai Staff</p>
-        <ul>
-            <li><a href="/inbound">Inbound</a></li>
-            <li><a href="/other">Other Staff Tasks</a></li>
-        </ul>
-    {% elif role == "staff_kerala" %}
-        <p>Options for Kerala Staff</p>
-        <ul>
-            <li><a href="/gardenledger">Garden Ledger</a></li>
-            <li><a href="/outbound">Outbound</a></li>
-            <li><a href="/vehicles">Vehicles</a></li>
-        </ul>
-    {% elif role == "ceo" %}
-        <p>CEO Full Access</p>
-        <ul>
-            <li><a href="/inbound">Inbound</a></li>
-            <li><a href="/gardenledger">Garden Ledger</a></li>
-            <li><a href="/outbound">Outbound</a></li>
-            <li><a href="/vehicles">Vehicles</a></li>
-            <li><a href="/reports">All Reports</a></li>
-        </ul>
-    {% endif %}
+<!-- logo -->
+<div class="text-center">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='vvfruits.png') }}" alt="VV Fruits Logo">
+    </div>
+    <div class="about">Fresh Fruits • Daily Auctions • Wholesale & Retail</div>
+</div>
 
-    <a href="/logout" class="logout">Logout</a>
-
-    <!-- Floating Fruits (use any fruit icons/images in static folder) -->
-    <img src="/static/apple.png" class="fruit" style="left:10%; animation-duration: 8s;">
-    <img src="/static/banana.png" class="fruit" style="left:40%; animation-duration: 10s;">
-    <img src="/static/orange.png" class="fruit" style="left:70%; animation-duration: 12s;">
-</body>
-</html>
+<!-- options grid -->
+<div class="card-grid">
+    <div class="row row-cols-1 row-cols-md-4 g-3">
+        {% for opt in options %}
+        <div class="col">
+            <a class="text-decoration-none" href="#">
+                <div class="option-card">{{ opt }}</div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
