@@ -1,57 +1,129 @@
-{% extends "base.html" %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Index Page</title>
 <style>
-  body {
-    background-color: #1b2b2c !important;
-    color: white !important;
-  }
-  .option-card {
-    background: #2c3e3f !important;
-    color: white !important;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
-  }
-  .option-card:hover {
-    transform: translateY(-5px);
-    background: #365050 !important;
-  }
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to right, #3498db, #2ecc71);
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        overflow: hidden;
+        color: #fff;
+        text-align: center;
+    }
+
+    header {
+        padding: 1rem;
+    }
+
+    header img {
+        max-width: 120px;
+        height: auto;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 5px #000;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    ul li {
+        background: rgba(255, 255, 255, 0.2);
+        margin: 0.5rem auto;
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        width: 220px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    ul li:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .logout {
+        margin-top: 2rem;
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #e74c3c;
+        border-radius: 5px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .logout:hover {
+        background: #c0392b;
+    }
+
+    /* Floating Fruits */
+    .fruit {
+        position: absolute;
+        bottom: -100px;
+        width: 40px;
+        opacity: 0.8;
+        animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) rotate(0); opacity: 1; }
+        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
 </style>
+</head>
+<body>
+    <header>
+        <!-- Replace with your actual logo path -->
+        <img src="/static/logo.png" alt="Cafeteria Logo">
+    </header>
 
-<div class="text-center my-4">
-  <h2>Welcome, {{ session['name'] }}</h2>
-  <p>Your role: <strong>{{ role|capitalize }}</strong></p>
-</div>
+    <h1>Welcome {{ session["user"] }}</h1>
 
-<div class="card-grid">
-  <div class="row row-cols-1 row-cols-md-4 g-3">
-
-    {% if role == "vallam" %}
-      <div class="col"><a href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
-      <div class="col"><a href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
-      <div class="col"><a href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
-      <div class="col"><a href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
-
-    {% elif role == "kerala" %}
-      <div class="col"><a href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
-      <div class="col"><a href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
-      <div class="col"><a href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
-
+    {% if role == "staff_vc" %}
+        <p>Options for Vallam & Chennai Staff</p>
+        <ul>
+            <li><a href="/inbound">Inbound</a></li>
+            <li><a href="/other">Other Staff Tasks</a></li>
+        </ul>
+    {% elif role == "staff_kerala" %}
+        <p>Options for Kerala Staff</p>
+        <ul>
+            <li><a href="/gardenledger">Garden Ledger</a></li>
+            <li><a href="/outbound">Outbound</a></li>
+            <li><a href="/vehicles">Vehicles</a></li>
+        </ul>
     {% elif role == "ceo" %}
-      <div class="col"><a href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
-      <div class="col"><a href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
-      <div class="col"><a href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
-      <div class="col"><a href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
-      <div class="col"><a href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
-      <div class="col"><a href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
-      <div class="col"><a href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
-      <div class="col"><a href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+        <p>CEO Full Access</p>
+        <ul>
+            <li><a href="/inbound">Inbound</a></li>
+            <li><a href="/gardenledger">Garden Ledger</a></li>
+            <li><a href="/outbound">Outbound</a></li>
+            <li><a href="/vehicles">Vehicles</a></li>
+            <li><a href="/reports">All Reports</a></li>
+        </ul>
     {% endif %}
 
-    <!-- Logout always visible -->
-    <div class="col"><a href="{{ url_for('logout') }}"><div class="card option-card p-3 text-center">Logout</div></a></div>
+    <a href="/logout" class="logout">Logout</a>
 
-  </div>
-</div>
-{% endblock %}
+    <!-- Floating Fruits (use any fruit icons/images in static folder) -->
+    <img src="/static/apple.png" class="fruit" style="left:10%; animation-duration: 8s;">
+    <img src="/static/banana.png" class="fruit" style="left:40%; animation-duration: 10s;">
+    <img src="/static/orange.png" class="fruit" style="left:70%; animation-duration: 12s;">
+</body>
+</html>
