@@ -2,70 +2,99 @@
 
 {% block content %}
 <style>
-body {
+  /* Force full dark theme */
+  body {
+    background-color: #1b2b2c !important; /* dark teal background */
+    color: white !important;              /* default text color */
+  }
+
+  /* Fix Bootstrap background overrides */
+  .bg-light, .bg-white, .bg-body {
     background-color: #1b2b2c !important;
     color: white !important;
-}
-.bg-light, .bg-white, .bg-body {
-    background-color: #1b2b2c !important;
-    color: white !important;
-}
-.floating {
+  }
+
+  /* Floating fruit animations */
+  .floating {
     position: absolute;
     animation: float 6s ease-in-out infinite;
-    width: 8vw; max-width: 90px;
+    width: 8vw;     
+    max-width: 90px; 
+    height: auto;    
 }
-.floating:nth-child(1) { animation-duration: 5s; }
-.floating:nth-child(2) { animation-duration: 7s; }
-.floating:nth-child(3) { animation-duration: 6.5s; }
-.floating:nth-child(4) { animation-duration: 8s; }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+  }
+  .floating:nth-child(1) { animation-duration: 5s; }
+  .floating:nth-child(2) { animation-duration: 7s; }
+  .floating:nth-child(3) { animation-duration: 6.5s; }
+  .floating:nth-child(4) { animation-duration: 8s; }
+
+  @keyframes float {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
-}
+  }
 
-.logo img { width: 270px; margin-top: -10px; border-radius: 12px; }
-.about { margin-top: 10px; font-size: 1.1rem; color: orange; }
-.card-grid { margin-top: 50px; padding: 20px; }
-.option-card {
+  /* Logo */
+  .logo img {
+    width: 270px;
+    margin-top: -10px;
+    border-radius: 12px;
+  }
+
+  /* Subtext under logo */
+  .about {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: orange;
+  }
+
+  /* Card grid */
+  .card-grid {
+    margin-top: 50px;
+    padding: 20px;
+  }
+
+  .option-card {
     background: #2c3e3f !important;
     color: white !important;
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
     transition: transform 0.2s ease;
-    padding: 20px;
-    text-align: center;
-    font-weight: bold;
-}
-.option-card:hover { transform: translateY(-5px); background: #365050 !important; }
+  }
+  .option-card:hover {
+    transform: translateY(-5px);
+    background: #365050 !important;
+  }
 </style>
 
 <!-- floating fruits -->
-<img src="{{ url_for('static', filename='orange.png') }}" class="floating" style="top: 170px; right: 15%;" />
-<img src="{{ url_for('static', filename='mangosteen.png') }}" class="floating" style="top: 90px; right: 20%;" />
-<img src="{{ url_for('static', filename='durian.png') }}" class="floating" style="top: 100px; left: 14%;" />
-<img src="{{ url_for('static', filename='rambutan.png') }}" class="floating" style="top: 190px; left: 18%;" />
+<img src="https://img.icons8.com/color/96/orange.png" class="floating" style="top: 170px; right: 15%;" />
+<img src="https://img.icons8.com/external-flat-gradient-andi-nur-abdillah/64/external-mangosteen-vegetable-and-fruit-flat-gradient-flat-gradient-andi-nur-abdillah.png" class="floating" style="top: 90px; right: 20%;" />
+<img src="https://img.icons8.com/external-wanicon-flat-wanicon/64/external-durian-fruits-and-vegetables-wanicon-flat-wanicon.png" class="floating" style="top: 100px; left: 14%;" />
+<img src="https://img.icons8.com/external-vitaliy-gorbachev-lineal-color-vitaly-gorbachev/60/external-rambutan-fruit-vitaliy-gorbachev-lineal-color-vitaly-gorbachev.png" class="floating" style="top: 190px; left: 18%;" />
 
-<!-- logo -->
+<!-- center logo -->
 <div class="text-center">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='vvfruits.png') }}" alt="VV Fruits Logo">
-    </div>
-    <div class="about">Fresh Fruits • Daily Auctions • Wholesale & Retail</div>
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/vvfruits.png') }}" alt="VV Fruits Logo">
+  </div>
+  <div class="about">
+    Fresh Fruits • Daily Auctions • Wholesale & Retail
+  </div>
 </div>
 
 <!-- options grid -->
 <div class="card-grid">
-    <div class="row row-cols-1 row-cols-md-4 g-3">
-        {% for opt in options %}
-        <div class="col">
-            <a class="text-decoration-none" href="#">
-                <div class="option-card">{{ opt }}</div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
+  <div class="row row-cols-1 row-cols-md-4 g-3">
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('direct_inbound') }}"><div class="card option-card p-3 text-center">Direct Inbound</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('auction') }}"><div class="card option-card p-3 text-center">Auction</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('available_stock') }}"><div class="card option-card p-3 text-center">Available Stock</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('outpending') }}"><div class="card option-card p-3 text-center">Out Pending</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('outbound') }}"><div class="card option-card p-3 text-center">Outbound</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('garden_ledger') }}"><div class="card option-card p-3 text-center">Garden Ledger</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('employee') }}"><div class="card option-card p-3 text-center">Employees</div></a></div>
+    <div class="col"><a class="text-decoration-none" href="{{ url_for('vehicles') }}"><div class="card option-card p-3 text-center">Vehicles</div></a></div>
+  </div>
 </div>
 {% endblock %}
