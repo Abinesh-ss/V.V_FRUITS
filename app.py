@@ -54,6 +54,7 @@ class DirectInbound(db.Model):
     __tablename__ = 'direct_inbound'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    product = db.Column(db.String, nullable=False) 
     whole_weight = db.Column(db.Float, nullable=False)
     no_of_trays = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -95,6 +96,7 @@ class Outbound(db.Model):
     total_weight = db.Column(db.Float, nullable=False)
     no_of_trays = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
+    buyername = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -221,6 +223,7 @@ def direct_inbound():
 def add_direct_inbound():
     try:
         name = request.form.get('name', '').strip()
+        product = request.form.get('product', '').strip()  # NEW
         weight = parse_float(request.form.get('whole_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
         quantity = calc_quantity(weight, no_of_trays)
@@ -358,6 +361,7 @@ def add_outbound():
         weight = parse_float(request.form.get('total_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
         quantity = calc_quantity(weight, no_of_trays)
+        buyername = request.form.get('buyername', '').strip()
 
         if not product:
             flash("Product is required.", "danger")
