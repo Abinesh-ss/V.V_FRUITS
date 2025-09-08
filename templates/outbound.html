@@ -1,58 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Outbound</h3>
+<div class="container mt-4">
+  <h3>Outbound</h3>
 
-<form method="POST" action="{{ url_for('add_outbound') }}" class="row g-2 mb-4">
-  <div class="col-md-4">
-    <input class="form-control" name="product" placeholder="Product" required>
-  </div>
-  <div class="col-md-2">
-    <input step="0.01" class="form-control" id="weight" name="total_weight" placeholder="Total Weight" required>
-  </div>
-  <div class="col-md-2">
-    <input type="number" class="form-control" id="no_of_trays" name="no_of_trays" placeholder="Trays" required>
-  </div>
+  <!-- Form to Add Outbound -->
+  <form method="POST" action="{{ url_for('add_outbound') }}" class="row g-2 mb-4">
+    <div class="col-md-3">
+      <input type="text" name="product" class="form-control" placeholder="Product" required>
+    </div>
+    <div class="col-md-2">
+      <input type="number" step="0.01" name="total_weight" class="form-control" placeholder="Weight (kg)" required>
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="no_of_trays" class="form-control" placeholder="No. of Trays" required>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="buyername" class="form-control" placeholder="Buyer Name">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">Add Outbound</button>
+    </div>
+  </form>
 
-  <!-- 🔒 Hidden Quantity (auto-calculated) -->
-  <input type="hidden" name="quantity" id="quantity">
-
-  <div class="col-12 mt-2">
-    <button class="btn btn-primary" type="submit">Add Outbound</button>
-  </div>
-</form>
-
-<table class="table table-sm table-bordered table-striped">
-  <thead class="table-dark">
-    <tr>
-      <th>Product</th>
-      <th>Weight</th>
-      <th>Trays</th>
-      <th>Quantity</th>
-      <th>Timestamp</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in rows %}
+  <!-- Table to Show Data -->
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td>{{ r.product }}</td>
-        <td>{{ r.total_weight }}</td>
-        <td>{{ r.no_of_trays }}</td>
-        <td>{{ r.quantity }}</td>
-        <td>{{ r.timestamp.strftime('%Y-%m-%d %H:%M:%S') if r.timestamp else '-' }}</td>
+        <th>Product</th>
+        <th>Weight</th>
+        <th>No. of Trays</th>
+        <th>Quantity</th>
+        <th>Buyer</th>
+        <th>Timestamp</th>
       </tr>
-    {% else %}
-      <tr><td colspan="5" class="text-center">No outbound records</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.product }}</td>
+        <td>{{ row.total_weight }}</td>
+        <td>{{ row.no_of_trays }}</td>
+        <td>{{ row.quantity }}</td>
+        <td>{{ row.buyername }}</td>
+        <td>{{ row.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
-
-<script>
-function calculateQuantity() {
-  let weight = parseFloat(document.getElementById("weight").value) || 0;
-  let trays = parseInt(document.getElementById("no_of_trays").value) || 0;
-  document.getElementById("quantity").value = (weight * trays).toFixed(2);
-}
-document.getElementById("weight").addEventListener("input", calculateQuantity);
-document.getElementById("no_of_trays").addEventListener("input", calculateQuantity);
-</script>
