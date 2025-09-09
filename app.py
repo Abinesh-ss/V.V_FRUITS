@@ -176,6 +176,27 @@ def add_auction():
         flash(f"Error adding auction entry: {str(e)}", "danger")
     return redirect(url_for('auction'))
 
+#-------------Bill------------------#
+
+from collections import defaultdict
+
+@app.route('/seller_bill/<seller_name>')
+def seller_bill(seller_name):
+    # Get seller’s auction entries
+    entries = Auction.query.filter_by(seller_name=seller_name).all()
+
+    if not entries:
+        flash("No entries found for this seller.", "warning")
+        return redirect(url_for('auction'))
+
+    # Group by price → sum quantities
+    grouped = defaultdict(float)
+    for e in entries:
+        grouped[e.price] += e.quantity
+
+    return render_template("seller_bill.html", seller=seller_name, grouped=grouped)
+
+
 
 # ---------- AVAILABLE STOCK ----------
 @app.route('/available_stock')
