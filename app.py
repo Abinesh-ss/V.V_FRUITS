@@ -47,7 +47,7 @@ class Auction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     seller_name = db.Column(db.String(100), nullable=False)
     product = db.Column(db.String(100), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
+    Weight = db.Column(db.Float, nullable=False)
     no_of_trays = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
     price = db.Column(db.Float, nullable=False)
