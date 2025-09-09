@@ -147,25 +147,30 @@ def calc_quantity(weight, trays):
 
 # ---------- LOGIN ---------#
 
-@app.route("/login", methods=["GET", "POST"])
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+
+app = Flask(__name__)
+app.secret_key = "your_secret_key_here"  # Replace with a secure key
+
+# ---------- LOGIN ----------
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-
-        if username == FIXED_USERNAME and password == FIXED_PASSWORD:
-            session["username"] = FIXED_USERNAME
-            return redirect(url_for("index"))
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Example validation (replace with your real user check)
+        if username == "admin" and password == "admin123":
+            session['username'] = username
+            return redirect(url_for('index'))
         else:
-            flash("Invalid Username or Password", "danger")
+            flash("Invalid credentials", "danger")
+            return redirect(url_for('login'))
+    
+    # If GET request, just show login page
+    return render_template('login.html')
 
-    return render_template("login.html")
 
-@app.route('/')
-def index():
-    if "username" not in session:
-        return redirect(url_for("login"))
-    return render_template('index.html')
 # ---------- INDEX ----------
 @app.route('/')
 def index():
@@ -173,6 +178,16 @@ def index():
         return redirect(url_for("login"))
     return render_template('index.html')
 
+
+# ---------- LOGOUT ----------
+@app.route('/logout')
+def logout():
+    session.pop("username", None)
+    return redirect(url_for("login"))
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 # ---------- AUCTION ----------
 @app.route('/auction')
