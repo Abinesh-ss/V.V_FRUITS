@@ -33,7 +33,6 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -98,12 +97,12 @@ class OutPending(db.Model):
 
 class GardenLedger(db.Model):
     __tablename__ = "garden_ledger"
-
     id = db.Column(db.Integer, primary_key=True)
     garden_name = db.Column(db.String(100), nullable=False)
     advance_given = db.Column(db.Float, nullable=False)
     total_amount_procured = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class Outbound(db.Model):
     __tablename__ = 'outbound'
@@ -145,12 +144,8 @@ def calc_quantity(weight, trays):
 # --------------------------
 # ROUTES
 # --------------------------
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-#------------Login-------------#
-
+# ---------- LOGIN ----------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -167,6 +162,20 @@ def login():
     return render_template("login.html")
 
 
+# ---------- LOGOUT ----------
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    flash("Logged out successfully.", "success")
+    return redirect(url_for("login"))
+
+
+# ---------- INDEX ----------
+@app.route('/')
+def index():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template('index.html')
 
 
 # ---------- AUCTION ----------
@@ -211,8 +220,8 @@ def add_auction():
         flash(f"Error adding auction entry: {str(e)}", "danger")
     return redirect(url_for('auction'))
 
-#-------------Bill------------------#
 
+# ---------- SELLER BILL ----------
 from collections import defaultdict
 
 @app.route('/seller_bill/<seller_name>')
@@ -230,7 +239,6 @@ def seller_bill(seller_name):
         grouped[e.price] += e.quantity
 
     return render_template("seller_bill.html", seller=seller_name, grouped=grouped)
-
 
 
 # ---------- AVAILABLE STOCK ----------
@@ -279,7 +287,7 @@ def direct_inbound():
 def add_direct_inbound():
     try:
         name = request.form.get('name', '').strip()
-        product = request.form.get('product', '').strip()  # NEW
+        product = request.form.get('product', '').strip()
         weight = parse_float(request.form.get('whole_weight'))
         no_of_trays = parse_int(request.form.get('no_of_trays'))
         quantity = calc_quantity(weight, no_of_trays)
@@ -291,6 +299,7 @@ def add_direct_inbound():
 
         new_row = DirectInbound(
             name=name,
+            product=product,
             whole_weight=weight,
             no_of_trays=no_of_trays,
             quantity=quantity,
@@ -427,7 +436,8 @@ def add_outbound():
             product=product,
             total_weight=weight,
             no_of_trays=no_of_trays,
-            quantity=quantity
+            quantity=quantity,
+            buyername=buyername
         )
         db.session.add(new_row)
         db.session.commit()
@@ -439,6 +449,7 @@ def add_outbound():
     return redirect(url_for('outbound'))
 
 
+# ---------- OTHER PAGES ----------
 @app.route('/vehicles')
 def vehicles():
     return render_template('vehicles.html')
