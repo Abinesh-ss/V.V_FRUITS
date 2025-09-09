@@ -404,12 +404,6 @@ def add_outbound():
     return redirect(url_for('outbound'))
 
 
-# ---------- SIMPLE PAGES ----------
-@app.route('/seller_bill')
-def seller_bill():
-    return render_template('seller_bill.html')
-
-
 @app.route('/vehicles')
 def vehicles():
     return render_template('vehicles.html')
