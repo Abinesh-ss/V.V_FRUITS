@@ -145,31 +145,27 @@ def calc_quantity(weight, trays):
 # ROUTES
 # --------------------------
 
-# ---------- LOGIN ----------
+# ---------- LOGIN ---------#
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
 
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            session["username"] = user.username
+        if username == FIXED_USERNAME and password == FIXED_PASSWORD:
+            session["username"] = FIXED_USERNAME
             return redirect(url_for("index"))
         else:
             flash("Invalid Username or Password", "danger")
 
     return render_template("login.html")
 
-
-# ---------- LOGOUT ----------
-@app.route("/logout")
-def logout():
-    session.pop("username", None)
-    flash("Logged out successfully.", "success")
-    return redirect(url_for("login"))
-
-
+@app.route('/')
+def index():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template('index.html')
 # ---------- INDEX ----------
 @app.route('/')
 def index():
