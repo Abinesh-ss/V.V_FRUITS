@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Seller Bill</h3>
+
+{% if seller %}
+  <h4>Seller: {{ seller }}</h4>
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>Quantity</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for price, qty in grouped.items() %}
+        <tr>
+          <td>{{ qty }}</td>
+          <td>{{ price }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No bill found.</p>
+{% endif %}
+{% endblock %}
