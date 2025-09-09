@@ -144,13 +144,11 @@ def calc_quantity(weight, trays):
 # --------------------------
 # ROUTES
 # --------------------------
+# ---------- LOGIN ----------
 
-# ---------- LOGIN ---------#
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-
-app = Flask(__name__)
-app.secret_key = "your_secret_key_here"  # Replace with a secure key
+# Get admin credentials from Railway environment
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123").strip()  # strip removes extra spaces/newlines
 
 # ---------- LOGIN ----------
 @app.route('/login', methods=['GET', 'POST'])
@@ -158,18 +156,16 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
-        # Example validation (replace with your real user check)
-        if username == "admin" and password == "admin123":
+
+        # Compare with environment variables
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['username'] = username
             return redirect(url_for('index'))
         else:
             flash("Invalid credentials", "danger")
             return redirect(url_for('login'))
     
-    # If GET request, just show login page
     return render_template('login.html')
-
 
 # ---------- INDEX ----------
 @app.route('/')
@@ -178,17 +174,14 @@ def index():
         return redirect(url_for("login"))
     return render_template('index.html')
 
-
 # ---------- LOGOUT ----------
 @app.route('/logout')
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
 
-
 if __name__ == "__main__":
     app.run(debug=True)
-
 # ---------- AUCTION ----------
 @app.route('/auction')
 def auction():
